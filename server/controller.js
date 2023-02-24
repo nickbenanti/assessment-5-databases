@@ -32,21 +32,6 @@ module.exports = {
             );
 
 
-            INSERT INTO cities (name)
-            VALUES ('Dallas'),
-            ('Austin'),
-            ('Shanghai'),
-            ('Yangon'),
-            ('Brasília'),
-            ('Chittagong'),
-            ('Nanjing'),
-            ('Shiraz'),
-            ('Berlin'),
-            ('Mumbai'),
-            ('Havana'),
-            ('Kyoto'),
-            ('Chicago');
-
 
 
             insert into countries (name)
@@ -247,8 +232,13 @@ module.exports = {
             ('Zimbabwe');
 
         
-
-
+            INSERT INTO cities (name, rating, country_id)
+            VALUES ('Dallas',5,67),
+            ('Austin',4,55),
+            ('Shanghai',1,1),
+            ('Yangon',2,53),
+            ('Brasília',1,108),
+            ('Chittagong', 1, 133),
         `).then(() => {
             console.log('DB seeded!')
             res.sendStatus(200)
@@ -275,12 +265,11 @@ module.exports = {
 
     getCities: (req,res) =>{
         sequelize.query(`
-        SELECT city.city_id, city.name, city.rating, country.country_id, country.name
-        FROM cities AS city
-            JOIN countries AS country
-                ON city.country_id = country.country_id
-                    WHERE country.country_id = city.country_id
-                    ORDER BY rating DESC;
+        SELECT city_id, rating, c.name AS city, co.name AS country, co.country_id 
+        FROM cities AS c
+        JOIN countries AS co 
+        ON c.country_id = co.country_id
+        ORDER BY rating desc;
         `).then(dbRes => {
             res.status(200).send(dbRes[0])
          }).catch(err => console.log(err))
@@ -293,7 +282,7 @@ module.exports = {
         sequelize.query(`
         DELETE
         FROM cities 
-        WHERE ${id} = city_id;
+        WHERE city_id = ${id};
         `).then(dbRes => {
             res.status(200).send(dbRes[0])
          }).catch(err => console.log(err))
